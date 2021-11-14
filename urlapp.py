@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import hashlib
 
 app = Flask(__name__)
 
 url2short = {}
+port_no = 5000
+HTTPS_STRING_LITERAL="https://"
 @app.route("/")
 
 def home():
@@ -13,11 +15,19 @@ def home():
         req = ""
     id_endpt = hashlib.sha256(req.encode('utf-8')).hexdigest()[:4]
 
-    print(id_endpt)
     if id_endpt not in url2short:
         url2short[id_endpt] = req
 
-    return render_template("home.html", out="localhost/{}".format(id_endpt))
+    return render_template("home.html", out="localhosti:{}/{}".format(port_no, id_endpt))
+
+@app.route("/<id>")
+
+def red(id=None):
+    if id not in url2short:
+        return render_template("home.html")
+    else:
+        original_url = url2short[id]
+        return redirect(original_url)
 
 
 
